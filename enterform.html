@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <title>サンプル</title>
+    <style>
+     .bg_table {
+              width: 300px;
+              padding: 0.53em 1em;
+              color: #29423b;
+              background: #ffe9a7;
+              border-bottom: solid 6px #ffc107;
+              border-radius: 9px;
+      }
+      .tit{
+        color: lightslategray;
+        font-size: 15pt;
+      }
+      .butt {
+            position: relative;
+            display: block;
+            height: 80px;
+            width: 80px;
+            border-radius: 4px;
+            background: #ffe9a7;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            -webkit-transition: 0.5s all;
+            transition: 0.5s all;
+           }  
+      .butt:hover {
+            background-color: #0957a4;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+      } 
+      .bg_pattern {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+               background-color: #ffffff;
+                opacity: 0.4;
+                z-index: -1;
+            }
+      .polka {
+              background-image: radial-gradient(#ffc107 2px,#ffffff 2px);
+              background-size:  20px 20px;
+     }
+     .Lines_v3 {
+        background-size: 40px 40px;
+       background-image:  repeating-linear-gradient(0deg, #ffc107, #ffc107 2px, #ffe9a7 2px, #ffe9a7);
+     } 
+     .osha{
+      font-family: "DotGothic16", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+     }   
+     footer {
+             width: 100%;
+             text-align: center;
+             background-color: #27d195;
+             bottom: 0; /* 一番下に表示 */
+             position: absolute;
+            }
+            footer::after {
+             content: "Copyright: @megutaku"
+            }
+            body {
+             min-height: calc(100vh - 30px); /* ウィンドウサイズ縦幅 - 30ピクセル */
+             position: relative;
+             box-sizing: border-box;
+             padding-bottom: 50px;
+           }
+
+
+    </style>
+   
+  </head>
+  <body>
+    <div class="bg_pattern Lines_v3"></div>
+    <h2 class="bg_table osha">予定を入力しよう</h2>  
+    <tr>
+      <p class="tit">タイトル</p>
+      <input type="text" id="title" style="width: 200px;">
+    </tr> 
+    
+    <p class="tit">日付</p>
+    <input type="date" id="day" name="scdule" value="2024-12-01", min="2020-01-01"/>
+    <p class="tit">場所</p>
+    <input type="text" id="place" style="width: 200px;">
+    
+    <p class="tit">持ち物<br>※複数ある場合は（、）で区切ってください</p>
+    <input type="text" id="belong" style="width: 300px; height: 80px;">
+    <p class="tit">メモ</p>
+      <input type="text" id="memo" style="width:300px; height: 80px;">
+     
+    <p></p>
+      <button class="butt"id="ookk">決定</button>
+    
+    <footer></footer>
+    <script>
+     //各オブジェクトの設定
+      const okbutton =document.getElementById("ookk");
+      const texttitle = document.getElementById("title");
+      const dayv = document.getElementById("day");
+      const placev = document.getElementById("place");
+      const belov = document.getElementById("belong");
+      const memov = document.getElementById("memo");
+    //日にちの設定
+      const date = new Date();
+      const currentYear = date.getFullYear();
+      const currentMonth = ("0"+(date.getMonth()+1)).slice(-2);
+      const currentday = ("0"+date.getDate()).slice(-2);
+      const currenthour = date.getHours();
+      var today = currentYear +'-'+ currentMonth + '-' + currentday;
+
+     //決定ボタンの処理
+      okbutton.addEventListener('click',okbclick);
+      
+      function okbclick(){
+        let scdu ={};
+        scdu.title = texttitle.value;
+        scdu.day = dayv.value;
+        scdu.place = placev.value;
+        scdu.belonging = belov.value;
+        scdu.memo = memov.value;
+        console.log('受け取った値：',scdu);
+        let JsonScdu = JSON.stringify(scdu);
+        localStorage.setItem("value",JsonScdu);
+        window.location.href ='sotgyo.html';
+        
+      }
+    </script>
+  </body>
+</html>
