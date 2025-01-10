@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+      <meta charset="UTF-8">
+      <title>忘れ物回避アプリ</title>
+      <style> 
+            
+            p {
+              font-size: 20px;
+              margin: 10px;
+              font-family: sans-serif;
+             }
+            table {
+             border-spacing: 0;
+             border-collapse: separate;
+            }
+            td {
+                border: 1px #325877  dashed;
+                padding: 7px;
+                text-align: center;
+            }
+            .butt {
+            position: relative;
+            height: 80px;
+            width: 80px;
+            border-radius: 4px;
+            background: #ffe9a7;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            -webkit-transition: 0.5s all;
+            transition: 0.5s all;
+           }  
+           .butt:hover {
+            background-color: #0957a4;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+           } 
+            td:first-child {
+              color: red;
+            }
+            td:last-child {
+              color: royalblue;
+            }
+            .is-disabled {
+              color: #ccc
+            }
+            .todday{
+                color: #10b12b !important;
+                font-weight: bold;
+            }
+           
+            .bg_pattern {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+               background-color: #ffe9a7;
+                opacity: 0.4;
+                z-index: -1;
+            }
+            .bg_table {
+              width: 300px;
+              padding: 0.53em 1em;
+              color: #29423b;
+              background: #ffe9a7;
+              border-bottom: solid 6px #ffc107;
+              border-radius: 9px;
+            }
+            .Lines_v3 {
+              background-size: 40px 40px;
+              background-image:  repeating-linear-gradient(0deg, #ffc107, #ffc107 2px, #ffe9a7 2px, #ffe9a7);
+            }
+            .osha {
+              font-family: "DotGothic16", sans-serif;
+              font-weight: 400;
+              font-style: normal;
+            }
+            footer {
+             
+             width: 100%;
+             text-align: center;
+             background-color: #37dfa5;
+             bottom: 0; /* 一番下に表示 */
+             position: absolute;
+            }
+            footer::after {
+             content: "Copyright: @megutaku"
+            }
+            body {
+             min-height: calc(100vh - 30px); /* ウィンドウサイズ縦幅 - 30ピクセル */
+             position: relative;
+             box-sizing: border-box;
+             padding-bottom: 50px;
+           }
+      </style>  
+    </head>
+    <body>
+      <div class="bg_pattern Lines_v3"></div>
+        <h2 class="bg_table osha" id="clockt"></h2>
+        <button class="butt" style="font-size: larger;" id="senget">先月</button>
+        <button class="butt" style="font-size: larger;" id="raiget">来月</button>
+        <div class="bg_table" id="calendar"></div>
+        <div class="bg_table" id="rutein">
+        <p class="osha" style="font-size: smaller;">いつもの持ち物</p>
+        <form action="#" id="form">
+           <input type="text" name="content">
+           <input type="submit" value="追加">
+        </form>
+        <ul id="tabs"></ul>
+        </div>
+        <p></p>
+        <button class="butt" id="settei">予定を　　設定</button>
+        <button class="butt" style="font-size: larger;" id="delete">削除</button>
+        <button class="butt" id="otoshi">予定を　　確認</button>
+        <footer></footer>
+        <script>
+            //buttonの設定
+            const senButton = document.getElementById('senget');
+            const raiButton = document.getElementById('raiget');
+            const setButton = document.getElementById('settei');
+            const calendarEl = document.getElementById('calendar');
+            let itumo=[];
+            if(localStorage.hasOwnProperty("mochimochi")){
+                itumo = JSON.parse(window.localStorage.getItem("mochimochi"));
+            }
+            document.getElementById('form').onsubmit = function (event) {
+              event.preventDefault();
+              let inputform = document.getElementById('form').content.value;
+              itumo.push(inputform);
+              window.localStorage.setItem('mochimochi',JSON.stringify(itumo));
+              window.location.reload();
+            }
+            const tabslist = document.getElementById('tabs')
+            const deleteButton = document.getElementById('delete');
+            const otoshiButton = document.getElementById('otoshi');
+             //ボタンのイベントを設定
+           senButton.addEventListener('click',senbclick);
+           raiButton.addEventListener('click',raibclick);
+           setButton.addEventListener('click',setbclick);
+           deleteButton.addEventListener('click',delClick);
+           otoshiButton.addEventListener('click',otoshiClick);
+            //カレンダー用の設定
+            const date = new Date();
+            const currentYear = date.getFullYear();
+            const currentMonth = date.getMonth();
+            const currentday = date.getDate();
+            const currenthour = date.getHours();
+            const today = currentYear +'-'+ (currentMonth+1) + '-' + currentday;
+            const deadline = currentYear +'-'+ currentMonth + '-' + currentday;
+            //localstoage の設定
+            const datekey = 'tmtmtm';
+            const kakuninkey ='kkddss';
+            let kakunin = 0;
+
+            let currentDispm = currentMonth;
+            let currentDispy = currentYear;
+            
+            //データの復旧
+            let schedules=[];
+            if(localStorage.hasOwnProperty(datekey)){
+              schedules = JSON.parse(window.localStorage.getItem(datekey));
+            }
+           
+           function generateCalend(Year,Month){
+
+            // カレンダーのHTML構造を生成
+            const daysInMonth = new Date(Year, Month+1, 0).getDate();
+            let calendarHtml ='<p class="osha">'+ Year + '/' + (Month+1) +'</p>'
+             calendarHtml += '<table><thead><tr>';
+            for (let i = 0; i < 7; i++) {
+              calendarHtml += `<th>${['日', '月', '火', '水', '木', '金', '土'][i]}</th>`;
+            }
+            calendarHtml += '</tr></thead><tbody><tr>';
+
+            for (let i = 1; i <= daysInMonth; i++) {
+             const dayOfWeek = new Date(Year, Month, i).getDay();
+              if (i === 1) {
+              calendarHtml += '<tr>';
+                for (let j = 0; j < dayOfWeek; j++) {
+                calendarHtml += '<td></td>';
+                }
+              }
+              let ccll = Year + '-' + (Month+1) + '-' + i;
+              if(ccll == today){
+                calendarHtml += `<td class="todday">${i} </td>`;
+              }else{
+                calendarHtml += `<td>${i} </td>`;
+              }
+              if (dayOfWeek === 6) {
+              calendarHtml += '</tr>';
+                if (i < daysInMonth) {
+                  calendarHtml += '<tr>';
+                }
+              } else if (i === daysInMonth) {
+               for (let j = dayOfWeek + 1; j <= 6; j++) {
+                calendarHtml += '<td></td>';
+               }
+              calendarHtml += '</tr>';
+              }
+            }
+            calendarHtml += '</tbody></table>';
+            calendarEl.innerHTML = calendarHtml;
+           }
+           
+           //カレンダーの生成
+           generateCalend(currentYear,currentMonth);
+           //いつもの持ち物リスト生成
+           for(var i = 0; i < itumo.length; i++){
+            var list = document.createElement('li');
+            list.textContent = itumo[i];
+            document.getElementById('tabs').appendChild(list);
+           }
+          
+           //入力フォームからのデータの取得
+           if(localStorage.hasOwnProperty("value")){
+            let valuee = JSON.parse(window.localStorage.getItem("value"));
+            //console.log("ddd",valuee);
+            schedules.push(valuee);
+            //console.log("fff",schedules);
+            window.localStorage.setItem(datekey,JSON.stringify(schedules));
+            localStorage.removeItem("value");
+           }
+
+            //各ボタンのクリック時の関数を定義
+            function twoDigit(num) {
+             let ret;
+             if( num < 10 ) 
+	             ret = "0" + num; 
+             else 
+   	           ret = num; 
+             return ret;
+            }
+           function showClock(){
+            let nowh = twoDigit(date.getHours());
+            let nowm = twoDigit( date.getMinutes());
+            let nows = twoDigit( date.getSeconds());
+            
+            document.getElementById("clockt").textContent = 'HOME 《' + nowh +":"+nowm+":" + nows + "》";
+            if(nowh == 9){
+              yoteiClick();
+            } 
+            setTimeout(showClock, 1000);
+           }
+           function senbclick(){
+            console.log('先月に移動');
+            currentDispm--;
+            if(currentDispm < 0){
+              currentDispm = 11;
+              currentDispy--;
+            }
+            generateCalend(currentDispy,currentDispm);
+            
+           }
+           function raibclick(){
+            console.log('来月に移動');
+            currentDispm++;
+            if(currentDispm > 11){
+              currentDispm = 0;
+              currentDispy++;
+            }
+            generateCalend(currentDispy,currentDispm);
+           }
+          function setbclick(){
+            window.location.href ='enterform.html';
+          }
+          
+          function delClick(){
+           //window.location.href = 'deleteform.html';
+           localStorage.removeItem(datekey);
+           localStorage.removeItem("mochimochi");
+           console.log('消したよ')
+           window.location.reload();
+          }
+
+          function yoteiClick(){
+            var ans = confirm('⚠　明日の予定は入れましたか？　⚠');
+            if(ans){
+              window.location.href = 'enterform.html';
+            }
+          }
+          function kakuninClick(){
+            var result = confirm('本日の予定を確認しよう！');
+             if(result) {
+              window.location.href='otosiCheck.html'
+             }
+          }
+
+          function otoshiClick(){
+            window.location.href = 'newcheck.html';
+          }
+
+           //デジタル時計の生成
+           showClock();
+        </script>  
+    </body>
+    
+</html>
