@@ -1,0 +1,339 @@
+<DOCTYPE! html>
+    <html>
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+          <meta charset="utf-8">
+          <title>サンプル</title>
+          <style>
+            p {
+              font-size: large;
+              font-weight: bold;
+            }
+            ul, ol {
+               padding: 0;
+               position: relative;
+            }
+
+            ul li, ol li {
+              color: #404040;
+              border-left: solid 6px #1fa67a;/*左側の線*/
+              border-bottom: solid 2px #dadada;
+              background: whitesmoke;/*背景色*/
+              margin-bottom: 5px;/*下のバーとの余白*/
+              line-height: 1.5;
+              padding: 0.5em;
+              list-style-type: none!important;/*ポチ消す*/
+            }
+           .bg_table {
+             width: 300px;
+             padding: 0.53em 1em;
+             color: #000000;
+             background: #ffe9a7;
+             border-bottom: solid 6px #ffc107;
+             border-radius: 9px;
+            }
+            .bg_pattern {
+               position: fixed;
+               top: 0;
+               left: 0;
+               width: 100vw;
+               height: 100vh;
+               background-color: #ffffff;
+               opacity: 0.4;
+               z-index: -1;
+            }
+            
+           .Lines_v3 {
+            background-size: 40px 40px;
+             background-image:  repeating-linear-gradient(0deg, #ffc107, #ffc107 2px, #ffe9a7 2px, #ffe9a7);
+           } 
+           .butt {
+            position: relative;
+            height: 80px;
+            width: 80px;
+            border-radius: 4px;
+            background: #ffe9a7;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            -webkit-transition: 0.5s all;
+            transition: 0.5s all;
+           }  
+           .butt:hover {
+            background-color: #0957a4;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+           } 
+           .osha {
+            font-family: "DotGothic16", sans-serif;
+            font-weight: 100;
+            font-style: normal;
+      
+           }
+           .strikethrough {
+               text-decoration: line-through; 
+           }
+           .today-list {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 10px;
+              margin-bottom: 10px;
+              background-color: #f2f2f2;
+              border-radius: 4px;
+             }
+            .detail-button {
+             
+             padding: 5px 10px;
+             border: none;
+             background-color: orangered;
+             color: #fff;
+             cursor: pointer;
+             border-radius: 4px;
+            }
+            .checkB {
+              border-bottom: solid 3px #000000;
+              margin-left: 4px; 
+            }
+            .checkOK {
+              border-bottom: dotted 3px #23a7ac;
+              margin-left: 4px;
+            }
+            .map {
+              background: #ffe9a7;
+              border: #000000;
+              border-radius: 4px;
+              color: #110f0f;
+              cursor: pointer;
+              line-height: 50px;
+              text-align: center;
+              display: none;
+              width: 300px;
+              padding: 0.53em 1em;
+            }
+            li.bashop {
+                border-left-color: rgb(26, 79, 177);
+            }
+            footer {
+             width: 100%;
+             text-align: center;
+             background-color: #27d195;
+             bottom: 0; /* 一番下に表示 */
+             position: absolute;
+            }
+            footer::after {
+             content: "Copyright: @megutaku"
+            }
+            body {
+             min-height: calc(100vh - 30px); /* ウィンドウサイズ縦幅 - 30ピクセル */
+             position: relative;
+             box-sizing: border-box;
+             padding-bottom: 50px;
+           }
+          </style>
+        </head>
+        <body>
+          <div class="bg_pattern Lines_v3"></div>
+          <h2 class="bg_table osha" >本日の予定を <br> 確認しよう！</h2>
+          <div class="bg_table" id="titlist">
+            <p class="osha" id="toda"></p>
+            <ul id="todo-list"></ul>
+            <button class="butt" id="hihyouji">リセット</button>
+          </div>
+          <div class="bg_table"id="list-dis">
+          </div>
+          <div class="map" id="place-dis" style="display: none;">
+            <p class="osha">◯今日行った場所を確認しよう◯</p>
+            <ul id="place-list"></ul>
+          </div>
+         <button class="butt" id="onsei">音声ON</button>
+          <button class="butt" id="kaeru">終了</button>
+          <button class="butt" id="disp">落とし物</button>
+          <footer></footer>
+          <script>
+            //dateオブジェクトを定義
+            const date = new Date();
+            const currentYear = date.getFullYear();
+            const currentMonth = ("0"+(date.getMonth()+1)).slice(-2);
+            const currentday = ("0"+date.getDate()).slice(-2);
+            const currenthour = date.getHours();
+            var today = currentYear +'-'+ currentMonth + '-' + currentday;
+            //各オブジェクトのイベント設定
+            const todaydis = document.getElementById('toda');
+            const listEL = document.getElementById('list-dis');
+            const resetButton = document.getElementById('hihyouji');
+            const  kakuButton = document.getElementById('kaeru');
+            const onseiButton = document.getElementById('onsei');
+            const bashoButton = document.getElementById('disp');
+            const imagegarary = document.getElementById('irast');
+            let belo_checkboxs = document.getElementsByClassName("bbelo");
+            const ull = document.getElementById('listt');
+            //各定数の定義
+            const datekey ='tmtmtm'
+            let count = 0;
+            let isonseiOk = false;
+            resetButton.addEventListener('click',hihyouji);
+            kakuButton.addEventListener('click',kakuClick);
+            onseiButton.addEventListener('click',onseiClick);
+            bashoButton.addEventListener('click',bashoClick);
+
+            /*
+            var nameArray = new Array('鍵','エコバッグ','体育館履き','Suica','モバイル充電器'
+                  ,'PC','財布');
+            var imgArray = new Array('key.png','ecobag.png','shoes.png','train_ic_card.png','mobile_battery.png',
+                  'laptop.png','gamaguchi.png');
+            */
+            //データの復旧
+            let schedules=[]; //全体の予定
+            let belongs =[];  //今日の予定の持ち物
+            let titles =[];  //今日の予定のタイトル
+            let placeies =[];
+            if(localStorage.hasOwnProperty(datekey)){
+               schedules = JSON.parse(window.localStorage.getItem(datekey));
+            }
+            console.log('schedule;',schedules);
+            //本日の予定のみを抽出
+            let todayfilter = schedules.filter(d => d.day === today );
+            
+            //console.log("todayfilter",todayfilter);
+            //予定の持ち物のみを抜き出す
+            const scdcount = todayfilter.length;
+            let isok = new Array(scdcount);
+            for(let i = 0;i < scdcount;i++){
+              let kaku = todayfilter[i].belonging;
+              titles.push(todayfilter[i].title);
+              placeies.push(todayfilter[i].place);
+              var sepa = kaku.split('、');
+              console.log('sepa;',sepa);
+              belongs.push(sepa);
+            }
+            console.log('belog',belongs);
+      
+            //本日の予定リストの出力
+            function listh(i){
+              const ulEle = document.querySelector('#todo-list');
+              //console.log('yse');
+
+              const liElement = document.createElement('li');
+              liElement.className = 'today-list';
+              const checkboxEle = document.createElement('input');
+              checkboxEle.type ='checkbox';
+             
+
+              const spanEle = document.createElement('span');
+              spanEle.className ='task-text';
+              spanEle.textContent = '  '+titles[i] + '  ';
+
+              const detailbutEle = document.createElement('button');
+              detailbutEle.className = 'detail-button';
+              detailbutEle.textContent = '詳細';
+              
+              /* 削除ボタン
+              const deleteButEle = document.createElement('button');
+              deleteButEle.className = 'delete-button';
+              deleteButEle.textContent = '削除';
+              */
+              detailbutEle.addEventListener('click', function(){
+                houji(i);
+              });
+              
+              /*
+              deleteButEle.addEventListener('click',function(){
+                liElement.remove();
+              });  */
+
+              liElement.appendChild(checkboxEle);
+              liElement.appendChild(spanEle);
+              liElement.appendChild(detailbutEle);
+              //liElement.appendChild(deleteButEle);
+
+              checkboxEle.addEventListener('change', function() {
+                if (this.checked) {
+                  spanEle.classList.add('strikethrough'); // ストライククラスを追加
+               } else {
+                  spanEle.classList.remove('strikethrough'); // ストライククラスを削除
+              } 
+              });
+              
+              ulEle.appendChild(liElement);
+
+            }
+            //場所のリストを追加する関数
+            function placelist(i){
+               const ulEle = document.querySelector('#place-list')
+               const lisElement = document.createElement('li');
+               lisElement.classList ='today-list bashop';
+               
+               const spanEle = document.createElement('span');
+               spanEle.className='task-text';
+               spanEle.textContent = '  ' + placeies[i] + '  ';
+
+               lisElement.appendChild(spanEle);
+               
+               ulEle.appendChild(lisElement);
+            }
+
+            
+            //今日の日付を表示
+            todaydis.innerHTML = today;
+            
+            for(var i= 0; i < titles.length;i++){
+              listh(i);
+              placelist(i);
+            }
+
+            //予定の詳細を表示
+            function houji(i){
+              //console.log('hyouij');
+              detail = '<p class="osha">持ち物</p>';
+              var mochimo = belongs[i];
+              for(var j = 0; j < mochimo.length;j++){
+                detail += '<label class="checkB" ><input type="checkbox">' + mochimo[j] +'  </label>  '
+              }
+              detail += '<p class="osha">その他メモ</p>';
+              detail += '<li>' + todayfilter[i].memo +'</li>'
+
+              listEL.innerHTML = detail;
+            }
+
+            function hihyouji(){
+              listEL.innerHTML = '';
+            }
+            function kakuClick(){
+                window.location.href = "sotgyo.html";
+            }
+            function onseiClick(){
+             isonseiOk = !isonseiOk;
+             if(isonseiOk){
+             let titcount = titles.length;
+             console.log(titcount);
+              for(let i = 0;i < titcount;i++){
+                  const yomiage = new SpeechSynthesisUtterance(titles[i]);
+                  speechSynthesis.speak(yomiage);
+              }
+              onseiButton.innerHTML = '音声OFF';
+              onseiButton.style.backgroundColor = "gray";
+              }else{
+                  onseiButton.innerHTML = '音声ON';
+                  onseiButton.style.backgroundColor = "#ffe9a7";
+                }
+             }
+
+             function bashoClick(){
+              var basho = document.getElementById('place-dis');
+
+              if(basho.style.display == 'block'){
+                basho.style.display = 'none';
+                bashoButton.style.backgroundColor ='#ffe9a7';
+                bashoButton.style.color = '#000000';
+              }else {
+                basho.style.display = 'block';
+                bashoButton.style.backgroundColor ='#dc143c';
+                bashoButton.style.color = '#ffffff';
+              }
+             }
+          </script>
+        </body>
+    </html>
