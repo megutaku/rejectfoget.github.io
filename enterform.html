@@ -52,6 +52,22 @@
               background-image: radial-gradient(#ffc107 2px,#ffffff 2px);
               background-size:  20px 20px;
      }
+    footer {
+             width: 100%;
+             text-align: center;
+             background-color: #27d195;
+             bottom: 0; /* 一番下に表示 */
+             position: absolute;
+            }
+            footer::after {
+             content: "Copyright: @megutaku"
+            }
+            body {
+             min-height: calc(100vh - 30px); /* ウィンドウサイズ縦幅 - 30ピクセル */
+             position: relative;
+             box-sizing: border-box;
+             padding-bottom: 50px;
+    }
      .Lines_v3 {
         background-size: 40px 40px;
        background-image:  repeating-linear-gradient(0deg, #ffc107, #ffc107 2px, #ffe9a7 2px, #ffe9a7);
