@@ -239,9 +239,10 @@
              return ret;
             }
            function showClock(){
-            let nowh = twoDigit(date.getHours());
-            let nowm = twoDigit( date.getMinutes());
-            let nows = twoDigit( date.getSeconds());
+            const tokei = new Date();
+            let nowh = twoDigit(tokei.getHours());
+            let nowm = twoDigit(tokei.getMinutes());
+            let nows = twoDigit(tokei.getSeconds());
             
             document.getElementById("clockt").textContent = 'HOME 《' + nowh +":"+nowm+":" + nows + "》";
             if(nowh == 9){
