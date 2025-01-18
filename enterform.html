@@ -120,14 +120,22 @@
       const currentMonth = ("0"+(date.getMonth()+1)).slice(-2);
       const currentday = ("0"+date.getDate()).slice(-2);
       const currenthour = date.getHours();
-      var today = currentYear +'-'+ currentMonth + '-' + currentday;
+      var today = currentYear +"-"+ currentMonth + "-" + currentday;
+      var tomorrow =  currentYear + "-" + currentMonth + "-" + tomday;
+      dayv.value = tomorrow;
 
      //決定ボタンの処理
       okbutton.addEventListener('click',okbclick);
       
       function okbclick(){
         let scdu ={};
-        scdu.title = texttitle.value;
+
+        if(!texttitle.value){
+          alert('タイトルを入力してください');
+        }else if(!placev.value){
+          alert('場所を入力してください');
+        }else{
+          scdu.title = texttitle.value;
         scdu.day = dayv.value;
         scdu.place = placev.value;
         scdu.belonging = belov.value;
@@ -135,8 +143,7 @@
         console.log('受け取った値：',scdu);
         let JsonScdu = JSON.stringify(scdu);
         localStorage.setItem("value",JsonScdu);
-        window.location.href ='sotgyo.html';
-        
+        windo
       }
     </script>
   </body>
